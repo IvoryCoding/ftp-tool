@@ -8,6 +8,8 @@
 
 import ftplib
 import sys
+import os
+import glob
 
 # Take the file to upload files from
 
@@ -55,8 +57,15 @@ def listSSH():
         print(f'\t{key}:{connections[key][0]}:{connections[key][1]}:{connections[key][2]}\n')
     print('*'*80)
 
+# Parses chosen folder and gets all files and paths
 def folderParse(folder):
-    pass
+    filePaths = []
+
+    for r, d, f in os.walk(folder):
+        for file in f:
+            filePaths.append(os.path.join(r, file))
+
+    return filePaths
 
 #Function for connect
 def connectFTP(conName, folder):
@@ -78,6 +87,12 @@ def connectFTP(conName, folder):
 
     ftp.cwd('code')
     ftp.retrlines('LIST')
+
+    # Create directory if it does not already exist
+    # cd into that directory
+    # upload all the respective files
+    # go back to main file (language file)
+
     print('\n', '*'*80)
 
 if __name__ == "__main__":
