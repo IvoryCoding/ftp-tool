@@ -8,8 +8,6 @@
 
 import ftplib
 import sys
-import os
-import platform
 
 # Take the file to upload files from
 
@@ -57,24 +55,27 @@ def listSSH():
         print(f'\t{key}:{connections[key][0]}:{connections[key][1]}:{connections[key][2]}\n')
     print('*'*80)
 
+def folderParse(folder):
+    pass
+
 #Function for connect
-def connectFTP(conName, fileName):
+def connectFTP(conName, folder):
     connections = readConnections()
+    files = folderParse(folder)
 
     ftp = ftplib.FTP()
 
     host = connections[conName][2] #Ip address
     port = 21
     ftp.connect(host, port)
-    print(ftp.getwelcome())
+    print('*'*80, '\n\n', ftp.getwelcome())
 
     try:
-        print("Logging in")
+        print(" Logging in\n")
         ftp.login(connections[conName][0], connections[conName][1]) # username and password
     except:
         print("Login failed. Please make sure the connection is correct with -list")
 
-    print('*'*80, '\n')
     ftp.cwd('code')
     ftp.retrlines('LIST')
     print('\n', '*'*80)
