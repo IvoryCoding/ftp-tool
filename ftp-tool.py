@@ -9,7 +9,7 @@
 import ftplib
 import sys
 import os
-import glob
+import re
 
 # Take the file to upload files from
 
@@ -88,12 +88,38 @@ def connectFTP(conName, folder):
     ftp.cwd('code')
     ftp.retrlines('LIST')
 
-    # Create directory if it does not already exist
+    print('\n', '*'*80, '\n')
+    uploadFTP(ftp, files)
+
+def uploadFTP(ftp, files):
+    fileInfoDict = {}
+
+    # The function to upload the files
+    print("\tUpload process beginng:\n")
+
+    print("\tParsing files to upload...\n")
+    # For loop to parse file information. Take language folder name, file name, other folders inside
+    for path in files:
+        info = path.split("/")[5]
+        fileInfoDict[os.path.dirname(info)] = []
+        fileInfoDict[os.path.dirname(info)] = os.path.basename(info)
+    
+    print(fileInfoDict)
+    print("\tParsing of files completed.\n")
+
+    # for each key create folder then upload files. If another folder inside then create that as well
+    try: # Create directory if it does not already exist
+        ftpResponse = ftp.mkd("test") #Folder name starting at python
+        print(f"Created {ftpResponse} directory")
+    except ftplib.error_perm:
+        print("\t_______ folder already created")
+    
     # cd into that directory
+    ftp.cwd("test") #Move to the already created folder or new folder
+
+    print('\n', '*'*80, '\n')
     # upload all the respective files
     # go back to main file (language file)
-
-    print('\n', '*'*80)
 
 if __name__ == "__main__":
     # Debug: print(f"Arguments count: {len(sys.argv)}")
