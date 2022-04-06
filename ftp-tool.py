@@ -93,6 +93,8 @@ def connectFTP(conName, folder):
 
 def uploadFTP(ftp, files):
     fileInfoDict = {}
+    uploadSuccess = 0
+    uploadFailed = 0
 
     # The function to upload the files
     print("\tUpload process beginng:\n")
@@ -101,22 +103,35 @@ def uploadFTP(ftp, files):
     # For loop to parse file information. Take language folder name, file name, other folders inside
     for path in files:
         info = path.split("/")[5]
-        fileInfoDict[os.path.dirname(info)] = []
-        fileInfoDict[os.path.dirname(info)] = os.path.basename(info)
-    
-    print(fileInfoDict)
-    print("\tParsing of files completed.\n")
 
+        if os.path.dirname(info) not in fileInfoDict.keys():
+            fileInfoDict[os.path.dirname(info)] = [[os.path.basename(info), path.replace('\\', '/')]]
+        else:
+            fileInfoDict[os.path.dirname(info)].append([os.path.basename(info), path.replace('\\', '/')])
+
+    print("\tParsing of files completed.\n\n")
+    print(ftp.pwd())
+    print("\tCreating folders and uploading files...\n")
+
+    for key in fileInfoDict:
     # for each key create folder then upload files. If another folder inside then create that as well
-    try: # Create directory if it does not already exist
-        ftpResponse = ftp.mkd("test") #Folder name starting at python
-        print(f"Created {ftpResponse} directory")
-    except ftplib.error_perm:
-        print("\t_______ folder already created")
-    
-    # cd into that directory
-    ftp.cwd("test") #Move to the already created folder or new folder
+        try: # Create directory if it does not already exist
+            ftp.mkd(key.replace('\\', '/')) #Folder name starting at python
+            print(f"\t{key} directory created sucessfully: [*]")
+        except ftplib.error_perm:
+            print(f"\t{key} directory created: [ ] (already exists)")
 
+        for item in fileInfoDict[key]:
+            # upload the files with ftp.storebinary
+            try:
+                ftp.storbinary(f'STOR {key}/{item[0]}', open(item[1], 'rb'))
+                print(f"\t\tUploaded {item[0]}: [*]")
+                uploadSuccess += 1
+            except ftplib.error_perm:
+                print(f"\t\tFailed to upload {item[0]}: [ ]")
+                uploadFailed += 1
+
+    print(f"\n\tUploaded {uploadSuccess} files. Failed to upload {uploadFailed} files.")
     print('\n', '*'*80, '\n')
     # upload all the respective files
     # go back to main file (language file)
