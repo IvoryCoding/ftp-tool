@@ -109,8 +109,8 @@ def uploadFTP(ftp, files):
         else:
             fileInfoDict[os.path.dirname(info)].append([os.path.basename(info), path.replace('\\', '/')])
 
-    print("\tParsing of files completed.\n\n")
-    print(ftp.pwd())
+    print("\tParsing of files completed.\n")
+
     print("\tCreating folders and uploading files...\n")
 
     for key in fileInfoDict:
@@ -124,7 +124,8 @@ def uploadFTP(ftp, files):
         for item in fileInfoDict[key]:
             # upload the files with ftp.storebinary
             try:
-                ftp.storbinary(f'STOR {key}/{item[0]}', open(item[1], 'rb'))
+                repKey = key.replace('\\', '/')
+                ftp.storbinary(f'STOR {repKey}/{item[0]}', open(item[1], 'rb'))
                 print(f"\t\tUploaded {item[0]}: [*]")
                 uploadSuccess += 1
             except ftplib.error_perm:
