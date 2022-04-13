@@ -1,6 +1,6 @@
-#   Date:        2022/02/14
+#   Date:        2022/04/04
 #   Author:      Emma Gillespie
-#   Description: Add known ssh hosts and connect to them. Terminal command file to make ssh easier
+#   Description: Connects to an FTP server and uploads files to the server
 #   Resources:   https://docs.python.org/3/library/ftplib.html
 #                
 
